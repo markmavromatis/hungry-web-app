@@ -61,8 +61,7 @@ router.get('/', (req: Request, res: Response) => {
       client.search(searchRequest).then(response => {
         const firstResult = response.jsonBody.businesses[0];
         const prettyJson = JSON.stringify(firstResult, null, 4);
-        console.log(prettyJson);
-        res.status(200).send(prettyJson);
+        res.status(200).send(response.jsonBody.businesses);
     }).catch( e => {
         console.error(e);
         res.status(500).send("Error connecting to Yelp search: " + e);

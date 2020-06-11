@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import '../css/App.css';
 import ViewFavorites from './ViewFavorites';
-import ViewSearchResults from './ViewSearchResults';
 import SearchRestaurants from './SearchRestaurants';
 import LoginUser from './LoginUser';
 import RegisterUser from './RegisterUser';
@@ -11,12 +10,16 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      formDisplay: "SearchRestaurants"
+      formDisplay: "SearchRestaurants",
+      searchResults: []
     };
 
     this.updateFormDisplay = this.updateFormDisplay.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
   }
+
+  // componentDidMount() {
+  // }
 
   updateFormDisplay(e) {
     // this.preventDefault();
@@ -25,8 +28,25 @@ class App extends Component {
   }
 
   handleSearch(e) {
-    this.setState({searchResults: [{"name": "Hardys", "address": "101 Main St"}, {"name": "McDonalds", "address": "102 Main St"}]});
-    this.updateFormDisplay("SearchRestaurants");
+    console.log("Entering method handleSearch...");
+    fetch('http://localhost:8080/api/v0/restaurants?distanceInMiles=5&address=107 Prospect Park W, Brooklyn, NY')
+    .then(res => res.json())
+    .then((data) => {
+      // console.log(data);
+      // console.log(Array.isArray(data));
+      // console.log(data[0]);
+      const restaurantsArray = []
+      let i = 0;
+      data.forEach(row => {
+        i += 1
+        restaurantsArray.push({"rownumber": i, "name": row.name, "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude})
+      })
+      this.setState({searchResults: restaurantsArray});
+
+    })
+    .catch(console.log)
+
+    // this.updateFormDisplay("SearchRestaurants");
   };
 
   render() {
@@ -47,10 +67,11 @@ class App extends Component {
           <LoginUser formDisplay={this.state.formDisplay === "Login"}/>
           <RegisterUser formDisplay={this.state.formDisplay === "RegisterUser"}/>
           <SearchRestaurants formDisplay={this.state.formDisplay === "SearchRestaurants"} 
-              updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}/>
+              updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
+              searchResults={this.state.searchResults}/>
           <ViewFavorites formDisplay={this.state.formDisplay === "Favorites"}
-              updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}/>
-          <ViewSearchResults formDisplay={this.state.formDisplay === "ViewSearchResults"}/>
+              updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
+              searchResults={this.state.searchResults}/>
         </header>
       </div>
     );
