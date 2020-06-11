@@ -1,5 +1,6 @@
 export const config = {
     "dev": {
+      "yelp_fusion_key": process.env.YELP_FUSION_KEY,
       "username": process.env.POSTGRES_USERNAME,
       "password": process.env.POSTGRES_PASSWORD,
       "database": process.env.POSTGRES_DATABASE,
