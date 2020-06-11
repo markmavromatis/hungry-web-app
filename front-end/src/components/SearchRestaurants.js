@@ -28,7 +28,6 @@ class SearchRestaurants extends Component {
         </ul>
         {this.props.searchResults.length}
       </div>
-      <div id='map' style='width: 400px; height: 300px;'></div>
 
     </div>
   );
