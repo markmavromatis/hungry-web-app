@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import '../css/App.css';
-import ReactMapGL from 'react-map-gl';
+import ReactMapGL, {Marker} from 'react-map-gl';
 
 class SearchRestaurants extends Component {
 
@@ -28,6 +28,15 @@ class SearchRestaurants extends Component {
 
 
   render() {
+
+    // Create the Markers
+    const restaurantMarkers = []
+
+    this.props.searchResults.forEach((eachRestaurant) => {
+      restaurantMarkers.push(<Marker latitude={eachRestaurant.latitude} longitude={eachRestaurant.longitude}><div><img src="logo192.png"/><a href={eachRestaurant.url}>{eachRestaurant.name}</a></div></Marker>)
+    })
+
+    console.log("Latitude " + this.props.viewport.longitude + " " + this.props.viewport.latitude)
     return (
       <div key={this.props.searchResults}>
       <div id="criteria" className={this.props.formDisplay ? '' : 'hide-component'}>
@@ -44,9 +53,12 @@ class SearchRestaurants extends Component {
       <div className={this.props.searchResults.length > 0 ? '' : 'hide-component'}>
       <ReactMapGL
         {...this.props.viewport}
-        mapboxApiAccessToken="pk.eyJ1IjoibWFya21hdnJvbWF0aXMiLCJhIjoiY2tiYXN2amNvMG1yYTJxbzRscnhqOXpoeCJ9.wnVVLpKx-JulTuNBck5RGw"
-
-      />
+        mapboxApiAccessToken="pk.eyJ1IjoibWFya21hdnJvbWF0aXMiLCJhIjoiY2tiYXN2amNvMG1yYTJxbzRscnhqOXpoeCJ9.wnVVLpKx-JulTuNBck5RGw">
+          <Marker latitude={this.props.viewport.latitude} longitude={this.props.viewport.longitude}>
+          <img src="logo192.png"/>
+          <div>OISHII^2!</div></Marker>
+          {restaurantMarkers}
+        </ReactMapGL>
             </div>
     </div>
   );

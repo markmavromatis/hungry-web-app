@@ -49,3 +49,16 @@
   width: 50%; 
 }
 
+img {
+  width: 30px;
+  height: 30px
+}
+
+.mapboxgl-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: black;
+  font-size: small;
+  will-change: transform;
+}

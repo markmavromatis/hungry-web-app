@@ -56,7 +56,7 @@ class App extends Component {
         let i = 0;
         data.forEach(row => {
           i += 1
-          restaurantsArray.push({"rownumber": i, "name": row.name, "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude})
+          restaurantsArray.push({"rownumber": i, "name": row.name, "url": row.url, "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude})
 
         })
         this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 400, height: 400, zoom: 12}})
