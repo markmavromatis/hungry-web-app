@@ -14,13 +14,16 @@ class App extends Component {
       formDisplay: "SearchRestaurants",
       searchResults: [],
       submittedSearchAddress: "",
-      mapAttributes: {
-        centerLongitude : 0,
-        centerLatitude: 0,
-        markers : []
-      }
-    };
-
+      viewport: {
+        latitude : 0,
+        longitude: 0,
+        width: 400,
+        height: 400,
+        zoom: 12
+      },
+      markers: []
+    }
+  
     this.updateFormDisplay = this.updateFormDisplay.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
   }
@@ -31,6 +34,7 @@ class App extends Component {
   }
 
   handleSearch(e) {
+    console.log("Access token = " + mapboxgl.accessToken);
     this.setState({submittedSearchAddress: e});
 
     // Identify longitude / latitude of the search address
@@ -48,12 +52,14 @@ class App extends Component {
         .then(res => res.json())
         .then((data) => {
 
-          const restaurantsArray = []
+        const restaurantsArray = []
         let i = 0;
         data.forEach(row => {
           i += 1
           restaurantsArray.push({"rownumber": i, "name": row.name, "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude})
+
         })
+        this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 400, height: 400, zoom: 12}})
         this.setState({searchResults: restaurantsArray});
       })
     .catch(console.log)
@@ -70,7 +76,9 @@ class App extends Component {
           <SearchRestaurants formDisplay={this.state.formDisplay === "SearchRestaurants"} 
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
               searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}
-              mapAttributes={this.state.mapAttributes}/>
+              mapAttributes={this.state.mapAttributes}
+              viewport={this.state.viewport}
+        />
           <ViewFavorites formDisplay={this.state.formDisplay === "Favorites"}
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
               searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}/>

@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import '../css/App.css';
-import RestaurantMap from './RestaurantMap';
+import ReactMapGL from 'react-map-gl';
 
 class SearchRestaurants extends Component {
 
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       searchLocation: ""
     };
@@ -13,6 +13,7 @@ class SearchRestaurants extends Component {
   }
 
 
+  
   handleChange(e) {
     const target = e.target;
     const value = target.value;
@@ -27,7 +28,6 @@ class SearchRestaurants extends Component {
 
 
   render() {
-
     return (
       <div key={this.props.searchResults}>
       <div id="criteria" className={this.props.formDisplay ? '' : 'hide-component'}>
@@ -41,17 +41,13 @@ class SearchRestaurants extends Component {
           <a id="Favorites" onClick={(e) => this.props.updateFormDisplay("Favorites")}>My Favorites</a>
           
       </div>
-      <div id="results">
-        <ul>
-        {this.props.searchResults.map((result) =>
-          <li key={result.rownumber}>{result.name} {result.latitude} {result.longitude}</li>
-        )}
-        </ul>
-      </div>
       <div className={this.props.searchResults.length > 0 ? '' : 'hide-component'}>
-        <RestaurantMap submittedSearchAddress={this.props.submittedSearchAddress}
-        mapAttributes={this.props.mapAttributes} />
-      </div>
+      <ReactMapGL
+        {...this.props.viewport}
+        mapboxApiAccessToken="pk.eyJ1IjoibWFya21hdnJvbWF0aXMiLCJhIjoiY2tiYXN2amNvMG1yYTJxbzRscnhqOXpoeCJ9.wnVVLpKx-JulTuNBck5RGw"
+
+      />
+            </div>
     </div>
   );
   }
