@@ -5,6 +5,8 @@ import { config } from '../../../../config/config';
 
 const router : Router = Router();
 
+// This service uses the Yelp Fusion API. More information can be found at:
+// https://github.com/Yelp/yelp-fusion
 const yelp = require('yelp-fusion');
 
 // Check whether a string value can be converted to a number.
@@ -38,9 +40,7 @@ router.get('/', (req: Request, res: Response) => {
         res.status(400).send("distanceInMiles is required");
     }
 
-    // console.log("*** DISTANCE IN MILES TO STRING IS: " + distanceInMiles);
     const distanceInMilesString = distanceInMiles.toString();
-    // console.log("DISTANCE IN MILES TO STRING IS: " + distanceInMilesString);
 
     if (!isNumber(distanceInMilesString)) {
         res.status(400).send("distanceInMiles needs to be a number")
@@ -54,7 +54,8 @@ router.get('/', (req: Request, res: Response) => {
     const searchRequest = {
         term:'restaurants',
         location: address,
-        radius: distanceInMeters
+        radius: distanceInMeters,
+        open_now: true
       };
 
     //   const result = await client.search(searchRequest);

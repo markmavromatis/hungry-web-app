@@ -13,6 +13,7 @@ class App extends Component {
     this.state = {
       formDisplay: "LoginUser",
       searchResults: [],
+      favorites: [],
       submittedSearchAddress: "",
       viewport: {
         latitude : 0,
@@ -28,6 +29,66 @@ class App extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.validateUser = this.validateUser.bind(this);
     this.logoutUser = this.logoutUser.bind(this);
+    this.handleGetFavorites = this.handleGetFavorites.bind(this);
+    this.handleAddFavorite = this.handleAddFavorite.bind(this);
+    this.handleDeleteFavorites = this.handleDeleteFavorites.bind(this);
+  }
+
+  handleDeleteFavorites() {
+    console.log("Deleting favorites...")
+    const bodyText = JSON.stringify({email: this.state.userInfo.email})
+    const url = "http://localhost:8080/api/v0/favorites"
+    fetch(url, {method: 'DELETE',
+    headers: {'Content-Type': 'application/json'},
+    body: bodyText
+  })
+
+  .then(res => {
+    if (res.status == 200) {
+      // Refresh the favorites
+      this.setState({favorites : []})      
+      // return
+    } else {
+      throw "FAILED TO DELETE FAVORITES"
+    }
+  }
+  )
+
+  }
+
+  handleAddFavorite(restaurant) {
+    console.log("Adding favorite: " + JSON.stringify(restaurant));
+    const bodyText = JSON.stringify({
+      email: this.state.userInfo.email, 
+      restaurantId: restaurant.restaurantId,
+      name: restaurant.name,
+      url: restaurant.url,
+      latitude: restaurant.latitude,
+      longitude: restaurant.longitude,
+      address1: restaurant.address1,
+      city: restaurant.city,
+      state: restaurant.state,
+      zip: restaurant.zip});
+      console.log("ZIP CODE = " + restaurant.zip);
+    fetch("http://localhost:8080/api/v0/favorites", {method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: bodyText
+    })
+    .then(res => {
+      if (res.status == 201) {
+        console.log("ADDED FAVORITE")
+        this.setState({formDisplay: "SearchRestaurants"})
+        // return res.json()
+      } else {
+        console.error(bodyText)
+        throw "FAILED TO ADD FAVORITE. Status = " + res.status
+      }
+    }
+    )
+    .catch(e => {
+      console.error(e)
+    })
+
   }
 
   validateUser(userId, password) {
@@ -69,8 +130,24 @@ class App extends Component {
     this.setState({formDisplay: e})
   }
 
+  // Retrieve favorites for an email address
+  handleGetFavorites(e) {
+
+    this.setState({formDisplay: "Favorites"});
+    console.log("Getting favorites: " + this.state.userInfo.email);
+    fetch("http://localhost:8080/api/v0/favorites/" + this.state.userInfo.email)
+    .then(res => res.json())
+    .then((data) => {
+      this.setState({favorites : data})
+    })
+  }
+
   handleSearch(e) {
-    // console.log("Access token = " + mapboxgl.accessToken);
+
+    if (!e) {
+      // Nothing to search
+      return false;
+    }
     this.setState({formDisplay: "SearchRestaurants"});
     this.setState({submittedSearchAddress: e});
 
@@ -93,10 +170,10 @@ class App extends Component {
         let i = 0;
         data.forEach(row => {
           i += 1
-          restaurantsArray.push({"rownumber": i, "name": row.name, "url": row.url, 
+          restaurantsArray.push({"rownumber": i, "restaurantId": row.id, "name": row.name, "url": row.url, 
               "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude,
               "address1": row.location.address1, "city": row.location.city,
-              "state": row.location.state, "zip": row.location.zip})
+              "state": row.location.state, "zip": row.location.zip_code})
 
         })
         this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 400, height: 400, zoom: 12}})
@@ -119,6 +196,8 @@ class App extends Component {
               searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}
               mapAttributes={this.state.mapAttributes}
               viewport={this.state.viewport} logoutUser={this.logoutUser}
+              handleGetFavorites = {this.handleGetFavorites} favorites={this.state.favorites}
+              handleAddFavorite = {this.handleAddFavorite} handleDeleteFavorites = {this.handleDeleteFavorites}
         />
 
         </header>

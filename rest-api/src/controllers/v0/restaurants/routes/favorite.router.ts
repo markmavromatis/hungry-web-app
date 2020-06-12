@@ -6,6 +6,13 @@ import {User} from '../../users/models/User';
 import { config } from '../../../../config/config';
 const router : Router = Router();
 
+router.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.header("Access-Control-Allow-Methods", ['GET', 'PUT', 'POST', 'DELETE']);
+    next();
+});
+
 // Search restaurants by criteria
 router.get('/:email', async (req: Request, res: Response) => {
     let { email} = req.params;
@@ -31,7 +38,8 @@ router.post('/', async (req: Request, res: Response) => {
 
     if (!email || !restaurantId || !name || !url || !latitude || !longitude 
         || !address1 || !city || !state || !zip) {
-            res.status(400).send({message: "email, restaurantid, name, url, latitude, longitude, address1, city, state, and zip are all required"});
+            console.log("**** INSUFFICIENT FIELDS")
+            return res.status(400).send({message: "email, restaurantid, name, url, latitude, longitude, address1, city, state, and zip are all required"});
     }
     
     // find the user
@@ -68,6 +76,7 @@ router.post('/', async (req: Request, res: Response) => {
     try {
         createdFavorite = await newFavorite.save();
     } catch (e) {
+        console.error(e)
         throw e;
     }
 
@@ -94,9 +103,11 @@ router.delete('/', async (req: Request, res: Response) => {
             if (i == count) {
                 res.status(200).send();
             }
+            i += 1;
         })
     } else {
-        res.status(400).send("No such favorite found!");
+        // Just silently success this request.
+        res.status(200).send();
     }
 
     // let createdFavorite;

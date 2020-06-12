@@ -53,6 +53,16 @@ class SearchRestaurants extends Component {
       
     })
 
+    const favoritesList = [];
+
+    let favoriteCounter = 0;
+    this.props.favorites.forEach((eachFavorite) => {
+      favoriteCounter += 1;
+      favoritesList.push(
+        <p key={"favorite" + favoriteCounter}>Name: {eachFavorite.name}<br/>
+        {eachFavorite.address1}, {eachFavorite.city}, {eachFavorite.state} {eachFavorite.zip}<br/>&nbsp;<br></br></p>
+      )
+    })
 
     console.log("Latitude " + this.props.viewport.longitude + " " + this.props.viewport.latitude)
     
@@ -68,9 +78,13 @@ class SearchRestaurants extends Component {
           &nbsp;&nbsp;
           <button className = "blue_button" type="button"  onClick={() => this.props.handleSearch(this.state.searchLocation)}>Search</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <div className={this.props.formDisplay != "Favorites" ? '' : 'hide-component'}>
-          <a id="Favorites" onClick={(e) => this.props.updateFormDisplay("Favorites")}>My Favorites</a>
-          </div>
+          <a className={this.props.formDisplay != "Favorites" ? '' : 'hide-component'} id="Favorites" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</a>
+          <a className={this.props.formDisplay == "Favorites" && this.props.favorites.length > 0 ? '' : 'hide-component'} id="Favorites" onClick={() => this.props.handleDeleteFavorites()}>Clear My Favorites</a>
+
+      </div>
+      <div className={this.props.formDisplay == "Favorites" ? '' : 'hide-component'}>
+        <p className="my-favorites-title">Favorite Restaurants</p>
+        {favoritesList}        
       </div>
       <div className={this.props.searchResults.length > 0 && this.props.formDisplay == "SearchRestaurants" ? '' : 'hide-component'}>
       <ReactMapGL 
@@ -94,7 +108,8 @@ class SearchRestaurants extends Component {
                       {this.state.selectedRestaurant.address1}<br/>
                       {this.state.selectedRestaurant.city},
                       {this.state.selectedRestaurant.state}
-                      {this.state.selectedRestaurant.zip}
+                      {this.state.selectedRestaurant.zip}<br/>
+                      <a className="blue_button" onClick={() => this.props.handleAddFavorite(this.state.selectedRestaurant)}>ADD FAVORITE</a>
                       </p>
                       </div></Popup>
         ) : null}
