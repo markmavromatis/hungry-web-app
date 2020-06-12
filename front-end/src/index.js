@@ -5,7 +5,7 @@ import './css/index.css';
 import App from './components/App';
 
 // Personal Mapbox Token
-mapboxgl.accessToken = "pk.eyJ1IjoibWFya21hdnJvbWF0aXMiLCJhIjoiY2tiYXN2amNvMG1yYTJxbzRscnhqOXpoeCJ9.wnVVLpKx-JulTuNBck5RGw";
+mapboxgl.accessToken = process.env.REACT_APP_HUNGRY_MAPBOX_TOKEN;
 
 ReactDOM.render(
   <React.StrictMode>

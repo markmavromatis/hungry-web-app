@@ -38,7 +38,6 @@ class App extends Component {
   }
 
   handleDeleteFavorites() {
-    console.log("Deleting favorites...")
     const bodyText = JSON.stringify({email: this.state.userInfo.email})
     const url = `http://${this.state.hostApi}/api/v0/favorites`
     fetch(url, {method: 'DELETE',
@@ -60,7 +59,7 @@ class App extends Component {
   }
 
   handleAddFavorite(restaurant) {
-    console.log("Adding favorite: " + JSON.stringify(restaurant));
+
     const bodyText = JSON.stringify({
       email: this.state.userInfo.email, 
       restaurantId: restaurant.restaurantId,
@@ -72,14 +71,13 @@ class App extends Component {
       city: restaurant.city,
       state: restaurant.state,
       zip: restaurant.zip});
-      console.log("ZIP CODE = " + restaurant.zip);
+
     fetch(`http://${this.state.hostApi}/api/v0/favorites`, {method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: bodyText
     })
     .then(res => {
       if (res.status == 201) {
-        console.log("ADDED FAVORITE")
         this.setState({formDisplay: "SearchRestaurants"})
         // return res.json()
       } else {
@@ -104,9 +102,6 @@ class App extends Component {
     })
     .then(res => {
       if (res.status == 200) {
-        console.log("AUTHENTICATED")
-        console.log("JSON = " + JSON.stringify(res))
-        console.log("Token = " + res.body.token)
         return res.json()
       } else {
         throw "INVALID"
@@ -138,7 +133,6 @@ class App extends Component {
   handleGetFavorites(e) {
 
     this.setState({formDisplay: "Favorites"});
-    console.log("Getting favorites: " + this.state.userInfo.email);
     fetch(`http://${this.state.hostApi}/api/v0/favorites/` + this.state.userInfo.email)
     .then(res => res.json())
     .then((data) => {
@@ -146,6 +140,7 @@ class App extends Component {
     })
   }
 
+  // Search Yelp for nearby restaurants
   handleSearch(e) {
 
     if (!e) {
@@ -183,7 +178,7 @@ class App extends Component {
         this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 400, height: 400, zoom: 12}})
         this.setState({searchResults: restaurantsArray});
       })
-    .catch(console.log)
+    .catch((e) => console.error(e))
     })
 
   };

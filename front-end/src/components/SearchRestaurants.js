@@ -20,7 +20,6 @@ class SearchRestaurants extends Component {
     const target = e.target;
     const value = target.value;
     const name = target.name;
-    // console.log("Name: " + name + " \tValue = " + value)
 
     this.setState({
       [name]: value
@@ -59,12 +58,12 @@ class SearchRestaurants extends Component {
     this.props.favorites.forEach((eachFavorite) => {
       favoriteCounter += 1;
       favoritesList.push(
-        <p key={"favorite" + favoriteCounter}>Name: {eachFavorite.name}<br/>
-        {eachFavorite.address1}, {eachFavorite.city}, {eachFavorite.state} {eachFavorite.zip}<br/>&nbsp;<br></br></p>
+        <div>
+        <a target="_blank" href={eachFavorite.url}><label className="favorite_restaurant_name">{eachFavorite.name}</label></a><br/>
+        {eachFavorite.address1}, {eachFavorite.city}, {eachFavorite.state} {eachFavorite.zip}<br/>&nbsp;<br></br>
+        </div>
       )
     })
-
-    console.log("Latitude " + this.props.viewport.longitude + " " + this.props.viewport.latitude)
     
     return (
 
@@ -89,7 +88,7 @@ class SearchRestaurants extends Component {
       <div className={this.props.searchResults.length > 0 && this.props.formDisplay == "SearchRestaurants" ? '' : 'hide-component'}>
       <ReactMapGL 
         {...this.props.viewport}
-        mapboxApiAccessToken="pk.eyJ1IjoibWFya21hdnJvbWF0aXMiLCJhIjoiY2tiYXN2amNvMG1yYTJxbzRscnhqOXpoeCJ9.wnVVLpKx-JulTuNBck5RGw">
+        mapboxApiAccessToken={process.env.REACT_APP_HUNGRY_MAPBOX_TOKEN}>
           <Marker latitude={this.props.viewport.latitude} longitude={this.props.viewport.longitude}>
           <img src="logo192.png"/>
           <div>Home</div></Marker>
@@ -106,8 +105,8 @@ class SearchRestaurants extends Component {
                     </p>
                     <p className="popup_restaurant_address">
                       {this.state.selectedRestaurant.address1}<br/>
-                      {this.state.selectedRestaurant.city},
-                      {this.state.selectedRestaurant.state}
+                      {this.state.selectedRestaurant.city},&nbsp;
+                      {this.state.selectedRestaurant.state}&nbsp;
                       {this.state.selectedRestaurant.zip}<br/>
                       <a className="blue_button" onClick={() => this.props.handleAddFavorite(this.state.selectedRestaurant)}>ADD FAVORITE</a>
                       </p>

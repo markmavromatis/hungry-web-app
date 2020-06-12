@@ -63,8 +63,9 @@ img {
   will-change: transform;
 }
 .login{
-  width:100px;
+  width: 150px;
   display: inline-block;
+  size: 50;
   margin-bottom: 20px
 }
 
@@ -104,6 +105,13 @@ img {
   margin-bottom: 1px;
 }
 
+.favorite_restaurant_name {
+  color: silver;
+  font-size: 16px;
+  padding-bottom: 1px;
+  margin-bottom: 1px;
+}
+
 .popup_restaurant_address {
   padding-top: 1px;
   margin-top: 1px;
@@ -117,4 +125,14 @@ img {
   max-width: 500;
   max-height: 500;
   font-size: 12;
+}
+
+.hippo_image{
+  height: 300px;
+  width: 600px;
+  padding-bottom: 10px;
+}
+
+.register{
+  font-size: 20px;
 }
