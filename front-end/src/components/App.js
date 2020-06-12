@@ -5,13 +5,14 @@ import SearchRestaurants from './SearchRestaurants';
 import LoginUser from './LoginUser';
 import RegisterUser from './RegisterUser';
 import mapboxgl from "mapbox-gl"
+import * as jwt from 'jsonwebtoken';
 
 class App extends Component {
 
   constructor() {
     super();
     this.state = {
-      formDisplay: "SearchRestaurants",
+      formDisplay: "LoginUser",
       searchResults: [],
       submittedSearchAddress: "",
       viewport: {
@@ -21,13 +22,49 @@ class App extends Component {
         height: 400,
         zoom: 12
       },
-      markers: []
+      userInfo: null
     }
   
     this.updateFormDisplay = this.updateFormDisplay.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.validateUser = this.validateUser.bind(this);
+    this.logoutUser = this.logoutUser.bind(this);
   }
 
+  validateUser(userId, password) {
+    const bodyText = JSON.stringify({email: userId, password: password});
+    console.log("BodyText: " + bodyText);
+    fetch("http://localhost:8080/api/v0/users/auth/login", {method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: bodyText
+    })
+    .then(res => {
+      if (res.status == 200) {
+        console.log("AUTHENTICATED")
+        console.log("JSON = " + JSON.stringify(res))
+        console.log("Token = " + res.body.token)
+        return res.json()
+      } else {
+        throw "INVALID"
+      }
+    }
+    )
+    .then(data => {
+      this.setState({userInfo: jwt.decode(data.token)})
+      this.setState({formDisplay: "SearchRestaurants"})
+      
+    })
+    .catch(e => {
+      console.error(e)
+    })
+    // .then((data) => {
+    // }
+  }
+
+  logoutUser() {
+    this.setState({userInfo: null});
+    this.setState({formDisplay: "LoginUser"});
+  }
 
   updateFormDisplay(e) {
     this.setState({formDisplay: e})
@@ -71,13 +108,14 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <LoginUser formDisplay={this.state.formDisplay === "Login"}/>
+          <LoginUser formDisplay={this.state.formDisplay === "LoginUser"}
+            validateUser={this.validateUser}/>
           <RegisterUser formDisplay={this.state.formDisplay === "RegisterUser"}/>
           <SearchRestaurants formDisplay={this.state.formDisplay === "SearchRestaurants"} 
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
               searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}
               mapAttributes={this.state.mapAttributes}
-              viewport={this.state.viewport}
+              viewport={this.state.viewport} logoutUser={this.logoutUser}
         />
           <ViewFavorites formDisplay={this.state.formDisplay === "Favorites"}
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}

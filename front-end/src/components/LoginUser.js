@@ -6,8 +6,11 @@ class LoginUser extends Component {
   render() {
 
     return (
-      <div className={this.props.formDisplay ? '' : 'hide-component'}>
-          <p>Login User</p>
+      <div align="left" className={this.props.formDisplay ? '' : 'hide-component'}>
+          <label className="title">Login</label>
+          <label className="login">UserID:</label><input id="UserID" type="text"/><br/>
+          <label className="login">Password: </label><input id="Password" type="password"/><br/>
+          <button type="button" onClick={() => this.props.validateUser(document.getElementById("UserID").value, document.getElementById("Password").value)}>Sign In</button>          
       </div>
     );
   }

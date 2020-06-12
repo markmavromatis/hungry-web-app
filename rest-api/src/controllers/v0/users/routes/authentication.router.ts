@@ -1,6 +1,5 @@
 // This router handles the creation and verification of login credentials.
 import {Router, Request, Response} from 'express';
-
 import {User} from '../models/User';
 
 import * as jwt from 'jsonwebtoken';
@@ -13,6 +12,11 @@ import {config} from "../../../../config/config";
 
 const router: Router = Router();
 
+router.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+});
 async function hashPassword(inputPassword : string): Promise<string> {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);

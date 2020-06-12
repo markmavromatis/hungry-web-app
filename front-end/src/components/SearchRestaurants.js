@@ -40,6 +40,7 @@ class SearchRestaurants extends Component {
     return (
       <div key={this.props.searchResults}>
       <div id="criteria" className={this.props.formDisplay ? '' : 'hide-component'}>
+        <button type="button" onClick={() => this.props.logoutUser()}>Logout</button>
         <p>Search Restaurants</p>
           <label>Address:&nbsp;&nbsp;</label>
           <input type="text" id="searchLocation" size="50" name="searchLocation" value={this.state.searchLocation}

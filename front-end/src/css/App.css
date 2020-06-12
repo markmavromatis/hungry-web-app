@@ -62,3 +62,17 @@ img {
   font-size: small;
   will-change: transform;
 }
+.login{
+  width:100px;
+  display: inline-block;
+  margin-bottom: 20px
+}
+
+.title {
+  font-size:30px;
+  display: block;
+  margin-bottom: 20px;
+}
+
+/* label { display: block; width: 400; } */
+/* label .login { display: block; width: 300px; } */
