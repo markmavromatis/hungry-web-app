@@ -71,7 +71,7 @@ class SearchRestaurants extends Component {
       <div id="criteria" className={this.props.formDisplay === "Favorites" || this.props.formDisplay == "SearchRestaurants" ? '' : 'hide-component'}>
         {/* <button type="button" onClick={() => this.props.logoutUser()}>Logout</button> */}
         <p className="title">Search Restaurants</p>
-          <label>Address:&nbsp;&nbsp;</label>
+        <div><label>Address:&nbsp;&nbsp;</label>
           <input type="text" id="searchLocation" size="50" name="searchLocation" value={this.state.searchLocation}
                   onChange={this.handleChange}/>
           &nbsp;&nbsp;
@@ -79,6 +79,7 @@ class SearchRestaurants extends Component {
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <a className={this.props.formDisplay != "Favorites" ? '' : 'hide-component'} id="Favorites" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</a>
           <a className={this.props.formDisplay == "Favorites" && this.props.favorites.length > 0 ? '' : 'hide-component'} id="Favorites" onClick={() => this.props.handleDeleteFavorites()}>Clear My Favorites</a>
+          </div>
 
       </div>
       <div className={this.props.formDisplay == "Favorites" ? '' : 'hide-component'}>
