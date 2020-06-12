@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import '../css/App.css';
-import ViewFavorites from './ViewFavorites';
 import SearchRestaurants from './SearchRestaurants';
 import LoginUser from './LoginUser';
 import RegisterUser from './RegisterUser';
@@ -71,7 +70,8 @@ class App extends Component {
   }
 
   handleSearch(e) {
-    console.log("Access token = " + mapboxgl.accessToken);
+    // console.log("Access token = " + mapboxgl.accessToken);
+    this.setState({formDisplay: "SearchRestaurants"});
     this.setState({submittedSearchAddress: e});
 
     // Identify longitude / latitude of the search address
@@ -111,15 +111,13 @@ class App extends Component {
           <LoginUser formDisplay={this.state.formDisplay === "LoginUser"}
             validateUser={this.validateUser}/>
           <RegisterUser formDisplay={this.state.formDisplay === "RegisterUser"}/>
-          <SearchRestaurants formDisplay={this.state.formDisplay === "SearchRestaurants"} 
+          <SearchRestaurants formDisplay={this.state.formDisplay}
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
               searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}
               mapAttributes={this.state.mapAttributes}
               viewport={this.state.viewport} logoutUser={this.logoutUser}
         />
-          <ViewFavorites formDisplay={this.state.formDisplay === "Favorites"}
-              updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
-              searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}/>
+
         </header>
       </div>
     );
