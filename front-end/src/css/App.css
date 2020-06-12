@@ -87,3 +87,25 @@ img {
   background-color: #008CBA;
   color: white;
 }
+
+.popup_restaurant_name {
+  color: blue;
+  font-size: 12px;
+  padding-bottom: 1px;
+  margin-bottom: 1px;
+}
+
+.popup_restaurant_address {
+  padding-top: 1px;
+  margin-top: 1px;
+  padding-bottom: 1px;
+  margin-bottom: 1px;
+  color: black;
+  font-size: 12px;
+}
+
+.popup {
+  max-width: 500;
+  max-height: 500;
+  font-size: 12;
+}

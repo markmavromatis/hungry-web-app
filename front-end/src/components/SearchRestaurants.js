@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import '../css/App.css';
-import ReactMapGL, {Marker} from 'react-map-gl';
+import ReactMapGL, {Marker, Popup} from 'react-map-gl';
+import {FaMapMarker} from 'react-icons/fa';
 
 class SearchRestaurants extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      searchLocation: ""
+      searchLocation: "",
+      selectedRestaurant: null
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -26,19 +28,36 @@ class SearchRestaurants extends Component {
 
   }
 
+  closePopup = () => {
+    this.setState({
+      selectedHotspot: null
+    }); 
+  };
 
+    
   render() {
 
+  
     // Create the Markers
     const restaurantMarkers = []
     let i = 0;
     this.props.searchResults.forEach((eachRestaurant) => {
       i += 1;
-      restaurantMarkers.push(<Marker key={i} latitude={eachRestaurant.latitude} longitude={eachRestaurant.longitude}><div><img src="logo192.png"/><a href={eachRestaurant.url}>{eachRestaurant.name}</a></div></Marker>)
+      restaurantMarkers.push(
+        <Marker key={i} latitude={eachRestaurant.latitude} longitude={eachRestaurant.longitude}>
+          <div>
+            <FaMapMarker onClick={() => {
+              this.setState({selectedRestaurant: eachRestaurant});
+            }}/>
+          </div></Marker>)
+      
     })
 
+
     console.log("Latitude " + this.props.viewport.longitude + " " + this.props.viewport.latitude)
+    
     return (
+
       <div key={this.props.searchResults}>
       <div id="criteria" className={this.props.formDisplay === "Favorites" || this.props.formDisplay == "SearchRestaurants" ? '' : 'hide-component'}>
         {/* <button type="button" onClick={() => this.props.logoutUser()}>Logout</button> */}
@@ -53,14 +72,33 @@ class SearchRestaurants extends Component {
           <a id="Favorites" onClick={(e) => this.props.updateFormDisplay("Favorites")}>My Favorites</a>
           </div>
       </div>
-      <div className={this.props.formDisplay == "SearchRestaurants" ? '' : 'hide-component'}>
+      <div className={this.props.searchResults.length > 0 && this.props.formDisplay == "SearchRestaurants" ? '' : 'hide-component'}>
       <ReactMapGL 
         {...this.props.viewport}
         mapboxApiAccessToken="pk.eyJ1IjoibWFya21hdnJvbWF0aXMiLCJhIjoiY2tiYXN2amNvMG1yYTJxbzRscnhqOXpoeCJ9.wnVVLpKx-JulTuNBck5RGw">
           <Marker latitude={this.props.viewport.latitude} longitude={this.props.viewport.longitude}>
           <img src="logo192.png"/>
-          <div>OISHII^2!</div></Marker>
+          <div>Home</div></Marker>
           {restaurantMarkers}
+          {this.state.selectedRestaurant !== null ? (
+        <Popup className="popup"
+          latitude={parseFloat(this.state.selectedRestaurant.latitude)}
+          longitude={parseFloat(this.state.selectedRestaurant.longitude)}
+          onClose={this.closePopup}
+        ><div>
+                    <p className="popup_restaurant_name">
+                      <a target="_blank" href={this.state.selectedRestaurant.url}>
+                        {this.state.selectedRestaurant.name}</a>
+                    </p>
+                    <p className="popup_restaurant_address">
+                      {this.state.selectedRestaurant.address1}<br/>
+                      {this.state.selectedRestaurant.city},
+                      {this.state.selectedRestaurant.state}
+                      {this.state.selectedRestaurant.zip}
+                      </p>
+                      </div></Popup>
+        ) : null}
+
         </ReactMapGL>
             </div>
     </div>
