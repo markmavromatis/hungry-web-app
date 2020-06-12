@@ -21,12 +21,10 @@ router.get('/:email', async (req: Request, res: Response) => {
         res.status(400).send("email is required");
     }
 
-    console.log("Querying favorites...")
     const favorites = await Favorite.findAll({
         where: {email: email}
     })
 
-    console.log("Sending results...")
     res.status(200).send(favorites);
     
 });
@@ -38,7 +36,6 @@ router.post('/', async (req: Request, res: Response) => {
 
     if (!email || !restaurantId || !name || !url || !latitude || !longitude 
         || !address1 || !city || !state || !zip) {
-            console.log("**** INSUFFICIENT FIELDS")
             return res.status(400).send({message: "email, restaurantid, name, url, latitude, longitude, address1, city, state, and zip are all required"});
     }
     
