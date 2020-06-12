@@ -4,6 +4,7 @@ import ViewFavorites from './ViewFavorites';
 import SearchRestaurants from './SearchRestaurants';
 import LoginUser from './LoginUser';
 import RegisterUser from './RegisterUser';
+import mapboxgl from "mapbox-gl"
 
 class App extends Component {
 
@@ -11,42 +12,50 @@ class App extends Component {
     super();
     this.state = {
       formDisplay: "SearchRestaurants",
-      searchResults: []
+      searchResults: [],
+      submittedSearchAddress: "",
+      mapCenterLong: 0,
+      mapCenterLat: 0
     };
 
     this.updateFormDisplay = this.updateFormDisplay.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
   }
 
-  // componentDidMount() {
-  // }
 
   updateFormDisplay(e) {
-    // this.preventDefault();
-    // console.log("Setting form display to: Favorites..." + JSON.stringify(e));
     this.setState({formDisplay: e})
   }
 
   handleSearch(e) {
-    console.log("Entering method handleSearch...");
-    fetch('http://localhost:8080/api/v0/restaurants?distanceInMiles=5&address=107 Prospect Park W, Brooklyn, NY')
+    this.setState({submittedSearchAddress: e});
+
+    // Identify longitude / latitude of the search address
+    // for centering the map.
+    fetch("https://api.mapbox.com/geocoding/v5/mapbox.places/" + e + ".json?access_token=" + mapboxgl.accessToken)
     .then(res => res.json())
     .then((data) => {
-      // console.log(data);
-      // console.log(Array.isArray(data));
-      // console.log(data[0]);
-      const restaurantsArray = []
-      let i = 0;
-      data.forEach(row => {
-        i += 1
-        restaurantsArray.push({"rownumber": i, "name": row.name, "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude})
-      })
-      this.setState({searchResults: restaurantsArray});
 
+      const center = data.features[0].center;
+      this.setState({mapCenterLong: center[0], mapCenterLat: center[1]});
     })
-    .catch(console.log)
+    .then(() => {
+      // After geocoding, Search Yelp for nearby restaurants
+      fetch("http://localhost:8080/api/v0/restaurants?distanceInMiles=5&address=" + e)
+        .then(res => res.json())
+        .then((data) => {
 
-    // this.updateFormDisplay("SearchRestaurants");
+          const restaurantsArray = []
+        let i = 0;
+        data.forEach(row => {
+          i += 1
+          restaurantsArray.push({"rownumber": i, "name": row.name, "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude})
+        })
+        this.setState({searchResults: restaurantsArray});
+      })
+    .catch(console.log)
+    })
+
   };
 
   render() {
@@ -68,10 +77,11 @@ class App extends Component {
           <RegisterUser formDisplay={this.state.formDisplay === "RegisterUser"}/>
           <SearchRestaurants formDisplay={this.state.formDisplay === "SearchRestaurants"} 
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
-              searchResults={this.state.searchResults}/>
+              searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}
+              mapCenterLong={this.state.mapCenterLong} mapCenterLat={this.state.mapCenterLat}/>
           <ViewFavorites formDisplay={this.state.formDisplay === "Favorites"}
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
-              searchResults={this.state.searchResults}/>
+              searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}/>
         </header>
       </div>
     );

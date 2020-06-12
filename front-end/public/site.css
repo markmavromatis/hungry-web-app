@@ -13,8 +13,8 @@
      
     .mapContainer {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 500px;
+    right: 400px;
     left: 0;
     bottom: 0;
     }
