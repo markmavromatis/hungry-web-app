@@ -14,8 +14,11 @@ class App extends Component {
       formDisplay: "SearchRestaurants",
       searchResults: [],
       submittedSearchAddress: "",
-      mapCenterLong: 0,
-      mapCenterLat: 0
+      mapAttributes: {
+        centerLongitude : 0,
+        centerLatitude: 0,
+        markers : []
+      }
     };
 
     this.updateFormDisplay = this.updateFormDisplay.bind(this);
@@ -37,7 +40,7 @@ class App extends Component {
     .then((data) => {
 
       const center = data.features[0].center;
-      this.setState({mapCenterLong: center[0], mapCenterLat: center[1]});
+      this.setState({mapAttributes: {centerLongitude: center[0], centerLatitude: center[1]}});
     })
     .then(() => {
       // After geocoding, Search Yelp for nearby restaurants
@@ -62,23 +65,12 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
           <LoginUser formDisplay={this.state.formDisplay === "Login"}/>
           <RegisterUser formDisplay={this.state.formDisplay === "RegisterUser"}/>
           <SearchRestaurants formDisplay={this.state.formDisplay === "SearchRestaurants"} 
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
               searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}
-              mapCenterLong={this.state.mapCenterLong} mapCenterLat={this.state.mapCenterLat}/>
+              mapAttributes={this.state.mapAttributes}/>
           <ViewFavorites formDisplay={this.state.formDisplay === "Favorites"}
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
               searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}/>

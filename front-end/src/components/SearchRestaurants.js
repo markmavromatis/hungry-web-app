@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import '../css/App.css';
-import mapboxgl from 'mapbox-gl';
 import RestaurantMap from './RestaurantMap';
 
 class SearchRestaurants extends Component {
@@ -51,7 +50,7 @@ class SearchRestaurants extends Component {
       </div>
       <div className={this.props.searchResults.length > 0 ? '' : 'hide-component'}>
         <RestaurantMap submittedSearchAddress={this.props.submittedSearchAddress}
-        mapCenterLong={this.props.mapCenterLong} mapCenterLat={this.props.mapCenterLat}/>
+        mapAttributes={this.props.mapAttributes} />
       </div>
     </div>
   );
