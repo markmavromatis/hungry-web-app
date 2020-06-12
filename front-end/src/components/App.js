@@ -8,6 +8,7 @@ import * as jwt from 'jsonwebtoken';
 
 class App extends Component {
 
+
   constructor() {
     super();
     this.state = {
@@ -22,8 +23,10 @@ class App extends Component {
         height: 400,
         zoom: 12
       },
-      userInfo: null
+      userInfo: null,
+      hostApi: process.env.REACT_APP_HUNGRY_REST_API_HOST + ":" + process.env.REACT_APP_HUNGRY_REST_API_PORT
     }
+
   
     this.updateFormDisplay = this.updateFormDisplay.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
@@ -37,7 +40,7 @@ class App extends Component {
   handleDeleteFavorites() {
     console.log("Deleting favorites...")
     const bodyText = JSON.stringify({email: this.state.userInfo.email})
-    const url = "http://localhost:8080/api/v0/favorites"
+    const url = `http://${this.state.hostApi}/api/v0/favorites`
     fetch(url, {method: 'DELETE',
     headers: {'Content-Type': 'application/json'},
     body: bodyText
@@ -70,7 +73,7 @@ class App extends Component {
       state: restaurant.state,
       zip: restaurant.zip});
       console.log("ZIP CODE = " + restaurant.zip);
-    fetch("http://localhost:8080/api/v0/favorites", {method: 'POST',
+    fetch(`http://${this.state.hostApi}/api/v0/favorites`, {method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: bodyText
     })
@@ -92,9 +95,10 @@ class App extends Component {
   }
 
   validateUser(userId, password) {
+
     const bodyText = JSON.stringify({email: userId, password: password});
-    console.log("BodyText: " + bodyText);
-    fetch("http://localhost:8080/api/v0/users/auth/login", {method: 'POST',
+
+    fetch(`http://${this.state.hostApi}/api/v0/users/auth/login`, {method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: bodyText
     })
@@ -135,7 +139,7 @@ class App extends Component {
 
     this.setState({formDisplay: "Favorites"});
     console.log("Getting favorites: " + this.state.userInfo.email);
-    fetch("http://localhost:8080/api/v0/favorites/" + this.state.userInfo.email)
+    fetch(`http://${this.state.hostApi}/api/v0/favorites/` + this.state.userInfo.email)
     .then(res => res.json())
     .then((data) => {
       this.setState({favorites : data})
@@ -162,7 +166,7 @@ class App extends Component {
     })
     .then(() => {
       // After geocoding, Search Yelp for nearby restaurants
-      fetch("http://localhost:8080/api/v0/restaurants?distanceInMiles=5&address=" + e)
+      fetch(`http://${this.state.hostApi}/api/v0/restaurants?distanceInMiles=5&address=` + e)
         .then(res => res.json())
         .then((data) => {
 
