@@ -9,14 +9,12 @@ import {NextFunction} from 'connect';
 import * as EmailValidator from 'email-validator';
 
 import {config} from "../../../../config/config";
+import {enableCors} from "../../../../util/CorsHelper"
 
 const router: Router = Router();
 
-router.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    next();
-});
+enableCors(router);
+
 async function hashPassword(inputPassword : string): Promise<string> {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
@@ -134,8 +132,5 @@ router.post('/', async (req: Request, res: Response) => {
     res.status(201).send({token: jwt, user: savedUser.email});
 });
 
-router.get('/', async (req: Request, res: Response) => {
-    res.send('auth')
-});
 
 export const AuthenticationRouter: Router = router;

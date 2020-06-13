@@ -9,7 +9,7 @@ class LoginUser extends Component {
 
     return (
       <div align="left" className={this.props.formDisplay ? '' : 'hide-component'}>
-          <img className="hippo_image" src={logo} width="500" height="600"/>
+          <img alt="Hungry Hippo" className="hippo_image" src={logo} width="500" height="600"/>
           <label className="title">Are you feeling hungry?</label>
           <label className="login">UserID:</label><input id="UserID" type="text"/><br/>
           <label className="login">Password: </label><input id="Password" type="password"/><br/>

@@ -5,6 +5,8 @@ import LoginUser from './LoginUser';
 import RegisterUser from './RegisterUser';
 import mapboxgl from "mapbox-gl"
 import * as jwt from 'jsonwebtoken';
+import ls from 'local-storage'
+
 
 class App extends Component {
 
@@ -35,27 +37,32 @@ class App extends Component {
     this.handleGetFavorites = this.handleGetFavorites.bind(this);
     this.handleAddFavorite = this.handleAddFavorite.bind(this);
     this.handleDeleteFavorites = this.handleDeleteFavorites.bind(this);
+    // this.getAuthorizationHeader = this.getAuthorizationHeader(this);
+  }
+
+  getAuthorizationHeader() {
+    const token = ls.get("RESTAPI_TOKEN");
+    return {'Authorization': 'Bearer ' + token}
   }
 
   // Delete all user favorites 
   handleDeleteFavorites() {
+    const headers = this.getAuthorizationHeader();
+    headers['Content-Type'] = 'application/json';
     const bodyText = JSON.stringify({email: this.state.userInfo.email})
     const url = `http://${this.state.hostApi}/api/v0/favorites`
-    fetch(url, {method: 'DELETE',
-    headers: {'Content-Type': 'application/json'},
-    body: bodyText
-  })
-
-  .then(res => {
-    if (res.status == 200) {
-      // Refresh the favorites
-      this.setState({favorites : []})      
-      // return
-    } else {
-      throw "FAILED TO DELETE FAVORITES"
-    }
-  }
-  )
+    fetch(url, {method: 'DELETE', headers: headers,
+        body: bodyText}
+      )
+    .then(res => {
+      if (res.status === 200) {
+        // Refresh the favorites
+        this.setState({favorites : []})      
+        // return
+      } else {
+        throw "FAILED TO DELETE FAVORITES" + res.json()
+      }
+    })
 
   }
 
@@ -74,12 +81,16 @@ class App extends Component {
       state: restaurant.state,
       zip: restaurant.zip});
 
+    const headers = this.getAuthorizationHeader()
+    headers['Content-Type'] = 'application/json';
+
     fetch(`http://${this.state.hostApi}/api/v0/favorites`, {method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: bodyText
     })
     .then(res => {
-      if (res.status == 201) {
+      // For this service, 200 if duplicate record exists, 201 if added.
+      if (res.status === 200 || res.status === 201) {
         this.setState({formDisplay: "SearchRestaurants"})
         // return res.json()
       } else {
@@ -104,7 +115,7 @@ class App extends Component {
       body: bodyText
     })
     .then(res => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         return res.json()
       } else {
         throw "INVALID"
@@ -112,8 +123,11 @@ class App extends Component {
     }
     )
     .then(data => {
-      this.setState({userInfo: jwt.decode(data.token)})
-      this.setState({formDisplay: "SearchRestaurants"})
+      ls.set("RESTAPI_TOKEN", data.token);
+      this.setState({
+        userInfo: jwt.decode(data.token),
+        formDisplay: "SearchRestaurants"
+      })
       
     })
     .catch(e => {
@@ -124,8 +138,8 @@ class App extends Component {
   }
 
   logoutUser() {
-    this.setState({userInfo: null});
-    this.setState({formDisplay: "LoginUser"});
+    this.setState({userInfo: null, formDisplay: "LoginUser"});
+    ls.setItem("RESTAPI_TOKEN", null)
   }
 
   updateFormDisplay(e) {
@@ -135,8 +149,11 @@ class App extends Component {
   // Retrieve user's favorite restaurants
   handleGetFavorites(e) {
 
+    const authHeader = this.getAuthorizationHeader();
+
     this.setState({formDisplay: "Favorites"});
-    fetch(`http://${this.state.hostApi}/api/v0/favorites/` + this.state.userInfo.email)
+    fetch(`http://${this.state.hostApi}/api/v0/favorites/` + this.state.userInfo.email
+        , {headers: authHeader})
     .then(res => res.json())
     .then((data) => {
       this.setState({favorites : data})
@@ -146,6 +163,7 @@ class App extends Component {
   // Search Yelp for nearby restaurants
   handleSearch(e) {
 
+    const authHeader = this.getAuthorizationHeader();
     if (!e) {
       // Nothing to search
       return false;
@@ -164,7 +182,8 @@ class App extends Component {
     })
     .then(() => {
       // After geocoding, Search Yelp for nearby restaurants
-      fetch(`http://${this.state.hostApi}/api/v0/restaurants?distanceInMiles=5&address=` + e)
+      fetch(`http://${this.state.hostApi}/api/v0/restaurants?distanceInMiles=5&address=` + e, 
+          {headers: authHeader})      
         .then(res => res.json())
         .then((data) => {
 
@@ -180,7 +199,7 @@ class App extends Component {
         })
         this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 400, height: 400, zoom: 12}})
         this.setState({searchResults: restaurantsArray});
-      })
+      }).catch((e) => console.error(e))
     .catch((e) => console.error(e))
     })
 

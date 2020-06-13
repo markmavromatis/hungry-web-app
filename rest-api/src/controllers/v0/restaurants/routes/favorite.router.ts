@@ -3,18 +3,15 @@ import {Router, Request, Response} from 'express';
 import {Favorite} from '../models/Favorite';
 import {User} from '../../users/models/User';
 
-import { config } from '../../../../config/config';
+import {enableCors} from "../../../../util/CorsHelper";
+import {requireAuth} from "../../users/routes/authentication.router";
+
 const router : Router = Router();
 
-router.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.header("Access-Control-Allow-Methods", ['GET', 'PUT', 'POST', 'DELETE']);
-    next();
-});
+enableCors(router);
 
-// Search restaurants by criteria
-router.get('/:email', async (req: Request, res: Response) => {
+// Search favorites by email address
+router.get('/:email', requireAuth, async (req: Request, res: Response) => {
     let { email} = req.params;
 
     if (!email) {
@@ -30,7 +27,7 @@ router.get('/:email', async (req: Request, res: Response) => {
 });
 
 //register a new favorite
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', requireAuth, async (req: Request, res: Response) => {
     const {email, restaurantId, name, url, latitude, 
         longitude, address1, city, state, zip} = req.body;
 
@@ -51,9 +48,10 @@ router.post('/', async (req: Request, res: Response) => {
         email: email,
         restaurantId: restaurantId
     }});
-    // check that user doesnt exists
+    // check that favorite doesn't exist
     if(existingFavorites.length > 0) {
-        return res.status(400).send({ message: `Favorite already exists with email address: ${email} and restaurant ID: ${restaurantId}` });
+        // If it does, then just returns success silently without doing anything.
+        return res.status(200).send({ message: `Favorite already exists with email address: ${email} and restaurant ID: ${restaurantId}` });
     }
     
     const newFavorite = await new Favorite({
@@ -81,7 +79,7 @@ router.post('/', async (req: Request, res: Response) => {
     res.status(201).send({favorite: newFavorite});
 });
 
-router.delete('/', async (req: Request, res: Response) => {
+router.delete('/', requireAuth, async (req: Request, res: Response) => {
     const {email} = req.body;
 
     if (!email) {
@@ -106,15 +104,6 @@ router.delete('/', async (req: Request, res: Response) => {
         // Just silently success this request.
         res.status(200).send();
     }
-
-    // let createdFavorite;
-    // try {
-    //     createdFavorite = await newFavorite.save();
-    // } catch (e) {
-    //     throw e;
-    // }
-
-    // Generate JWT
 });
 
 

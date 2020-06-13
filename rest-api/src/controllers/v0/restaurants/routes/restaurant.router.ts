@@ -2,6 +2,7 @@ import {Router, Request, Response} from 'express';
 
 import {Restaurant} from '../models/Restaurant';
 import { config } from '../../../../config/config';
+import { requireAuth } from '../../users/routes/authentication.router';
 
 const router : Router = Router();
 
@@ -20,16 +21,14 @@ function isNumber(value: string | number): boolean
 }
 
 
-router.get('/')
-
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', requireAuth, async (req: Request, res: Response) => {
     let { id } = req.params;
     const item = await Restaurant.findByPk(id);
     res.send(item);
 });
 
 // Search restaurants by criteria
-router.get('/', (req: Request, res: Response) => {
+router.get('/', requireAuth, (req: Request, res: Response) => {
     let { address, distanceInMiles} = req.query;
 
     if (!address) {
