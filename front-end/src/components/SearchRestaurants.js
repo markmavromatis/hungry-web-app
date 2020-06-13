@@ -2,7 +2,11 @@ import React, {Component} from 'react';
 import '../css/App.css';
 import ReactMapGL, {Marker, Popup} from 'react-map-gl';
 import {FaMapMarker} from 'react-icons/fa';
+import {IoIosAt} from 'react-icons/io';
 
+// This screen serves two purposes:
+// 1) Search for restaurants near an address
+// 2) View user's favorite restaurants
 class SearchRestaurants extends Component {
 
   constructor(props) {
@@ -37,7 +41,8 @@ class SearchRestaurants extends Component {
   render() {
 
   
-    // Create the Markers
+    // For the Search Restaurants screen:
+    // Create a map marker for each (restaurant) search result
     const restaurantMarkers = []
     let i = 0;
     this.props.searchResults.forEach((eachRestaurant) => {
@@ -48,10 +53,13 @@ class SearchRestaurants extends Component {
             <FaMapMarker onClick={() => {
               this.setState({selectedRestaurant: eachRestaurant});
             }}/>
-          </div></Marker>)
+          </div></Marker>
+      )
       
     })
 
+    // For the Favorites screen:
+    // Create a list of favorite restaurants to be displayed
     const favoritesList = [];
 
     let favoriteCounter = 0;
@@ -68,8 +76,8 @@ class SearchRestaurants extends Component {
     return (
 
       <div key={this.props.searchResults}>
+      {/* Search Restaurants control: Address Box, Search Button, View Favorites Button, Clear Favorites Button */}
       <div id="criteria" className={this.props.formDisplay === "Favorites" || this.props.formDisplay == "SearchRestaurants" ? '' : 'hide-component'}>
-        {/* <button type="button" onClick={() => this.props.logoutUser()}>Logout</button> */}
         <p className="title">Search Restaurants</p>
         <div><label>Address:&nbsp;&nbsp;</label>
           <input type="text" id="searchLocation" size="50" name="searchLocation" value={this.state.searchLocation}
@@ -79,46 +87,50 @@ class SearchRestaurants extends Component {
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <a className={this.props.formDisplay != "Favorites" ? '' : 'hide-component'} id="Favorites" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</a>
           <a className={this.props.formDisplay == "Favorites" && this.props.favorites.length > 0 ? '' : 'hide-component'} id="Favorites" onClick={() => this.props.handleDeleteFavorites()}>Clear My Favorites</a>
-          </div>
-
+        </div>
       </div>
+
+      {/* Favorites List (for View Favorites screen) */}
       <div className={this.props.formDisplay == "Favorites" ? '' : 'hide-component'}>
         <p className="my-favorites-title">Favorite Restaurants</p>
         {favoritesList}        
       </div>
+
+      {/* Map (for Search Restaurants screen) */}
       <div className={this.props.searchResults.length > 0 && this.props.formDisplay == "SearchRestaurants" ? '' : 'hide-component'}>
       <ReactMapGL 
         {...this.props.viewport}
         mapboxApiAccessToken={process.env.REACT_APP_HUNGRY_MAPBOX_TOKEN}>
           <Marker latitude={this.props.viewport.latitude} longitude={this.props.viewport.longitude}>
-          <img src="logo192.png"/>
+          <IoIosAt />
           <div>Home</div></Marker>
           {restaurantMarkers}
-          {this.state.selectedRestaurant !== null ? (
-        <Popup className="popup"
-          latitude={parseFloat(this.state.selectedRestaurant.latitude)}
-          longitude={parseFloat(this.state.selectedRestaurant.longitude)}
-          onClose={this.closePopup}
-        ><div>
-                    <p className="popup_restaurant_name">
-                      <a target="_blank" href={this.state.selectedRestaurant.url}>
-                        {this.state.selectedRestaurant.name}</a>
-                    </p>
-                    <p className="popup_restaurant_address">
-                      {this.state.selectedRestaurant.address1}<br/>
-                      {this.state.selectedRestaurant.city},&nbsp;
-                      {this.state.selectedRestaurant.state}&nbsp;
-                      {this.state.selectedRestaurant.zip}<br/>
-                      <a className="blue_button" onClick={() => this.props.handleAddFavorite(this.state.selectedRestaurant)}>ADD FAVORITE</a>
-                      </p>
-                      </div></Popup>
-        ) : null}
 
-        </ReactMapGL>
-            </div>
+          {/* Draw a popup on the selected restaurant (if any selected) */}
+          {this.state.selectedRestaurant !== null ? (
+            <Popup className="popup"
+              latitude={parseFloat(this.state.selectedRestaurant.latitude)}
+              longitude={parseFloat(this.state.selectedRestaurant.longitude)}
+              onClose={this.closePopup}>
+              <div>
+                <p className="popup_restaurant_name">
+                  <a target="_blank" href={this.state.selectedRestaurant.url}>
+                    {this.state.selectedRestaurant.name}</a>
+                </p>
+                <p className="popup_restaurant_address">
+                  {this.state.selectedRestaurant.address1}<br/>
+                  {this.state.selectedRestaurant.city},&nbsp;
+                  {this.state.selectedRestaurant.state}&nbsp;
+                  {this.state.selectedRestaurant.zip}<br/>
+                  <a className="blue_button" onClick={() => this.props.handleAddFavorite(this.state.selectedRestaurant)}>ADD FAVORITE</a>
+                </p>
+              </div>
+            </Popup>
+          ) : null}
+      </ReactMapGL>
     </div>
-  );
-  }
+  </div>
+)}
 }
 
 export default SearchRestaurants;

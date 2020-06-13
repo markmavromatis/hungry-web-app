@@ -37,6 +37,7 @@ class App extends Component {
     this.handleDeleteFavorites = this.handleDeleteFavorites.bind(this);
   }
 
+  // Delete all user favorites 
   handleDeleteFavorites() {
     const bodyText = JSON.stringify({email: this.state.userInfo.email})
     const url = `http://${this.state.hostApi}/api/v0/favorites`
@@ -58,6 +59,7 @@ class App extends Component {
 
   }
 
+  // Add a new favorite restaurant
   handleAddFavorite(restaurant) {
 
     const bodyText = JSON.stringify({
@@ -92,6 +94,7 @@ class App extends Component {
 
   }
 
+  // Validate user credentials (userID and password)
   validateUser(userId, password) {
 
     const bodyText = JSON.stringify({email: userId, password: password});
@@ -129,7 +132,7 @@ class App extends Component {
     this.setState({formDisplay: e})
   }
 
-  // Retrieve favorites for an email address
+  // Retrieve user's favorite restaurants
   handleGetFavorites(e) {
 
     this.setState({formDisplay: "Favorites"});

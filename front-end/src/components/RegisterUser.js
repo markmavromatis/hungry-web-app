@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import '../css/App.css';
 
+// Register New User page (in development)
 class RegisterUser extends Component {
 
     render() {

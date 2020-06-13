@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import logo from './hungryHippo.png'
 import '../css/App.css';
 
+// User Login Page
 class LoginUser extends Component {
  
   render() {
