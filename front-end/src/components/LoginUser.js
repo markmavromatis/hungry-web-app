@@ -18,14 +18,14 @@ class LoginUser extends Component {
 
 
     return (
-      <div align="left" className={this.props.formDisplay == "LoginUser" ? '' : 'hide-component'}>
+      <div align="left" className={this.props.formDisplay === "LoginUser" ? '' : 'hide-component'}>
           <img alt="Hungry Hippo" className="hippo_image" src={logo} width="500" height="600"/>
           <label className="title">Are you feeling hungry?</label>
           <label className="login">UserID:</label><input id="UserID" type="text"/><br/>
           <label className="login">Password: </label><input id="Password" type="password"/><br/>
           <button className="blue_button" type="button" onClick={() => this.props.validateUser(document)}>Sign In</button>
           <div className="loginError {this.props.loginError ? '' : 'hide-component'}"><p>{this.props.loginError}</p></div>
-          <p><label className="register"> No account? No problem. <a className="register registerLink" onClick={() => this.props.handleNavigateToRegisterPage(document)}>Register here</a></label></p>
+          <p><label className="register"> No account? No problem. <button className="register registerLink" onClick={() => this.props.handleNavigateToRegisterPage(document)}>Register here</button></label></p>
       </div>
     );
   }

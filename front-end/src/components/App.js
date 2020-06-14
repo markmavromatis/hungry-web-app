@@ -45,9 +45,9 @@ class App extends Component {
     this.handleNavigateToRegisterPage = this.handleNavigateToRegisterPage.bind(this);
     this.handleRegisterUser = this.handleRegisterUser.bind(this);
 
-    // this.getAuthorizationHeader = this.getAuthorizationHeader(this);
   }
 
+  // Build an authorization header with the JWT token.
   getAuthorizationHeader() {
     const token = ls.get("RESTAPI_TOKEN");
     return {'Authorization': 'Bearer ' + token}
@@ -66,9 +66,8 @@ class App extends Component {
       if (res.status === 200) {
         // Refresh the favorites
         this.setState({favorites : []})      
-        // return
       } else {
-        throw "FAILED TO DELETE FAVORITES" + res.json()
+        console.error("Failed to delete favorites! Response details: " + res.json())
       }
     })
 
@@ -100,21 +99,18 @@ class App extends Component {
       // For this service, 200 if duplicate record exists, 201 if added.
       if (res.status === 200 || res.status === 201) {
         this.setState({formDisplay: "SearchRestaurants"})
-        // return res.json()
       } else {
-        console.error(bodyText)
-        throw "FAILED TO ADD FAVORITE. Status = " + res.status
+        throw new Error("FAILED TO ADD FAVORITE. Status = " + res.status);
+        // console.error("Request text: " + bodyText);
       }
-    }
-    )
+    })
     .catch(e => {
       console.error(e)
     })
 
   }
 
-
-
+  // Logout the user and initialize the session
   logoutUser() {
     this.setState({
       userInfo: null,
@@ -124,6 +120,7 @@ class App extends Component {
     ls.set("RESTAPI_TOKEN", null)
   }
 
+  // Change the active page (Useful for toggling between Search and Favorites mode)
   updateFormDisplay(e) {
     this.setState({formDisplay: e})
   }
@@ -131,6 +128,7 @@ class App extends Component {
   // Retrieve user's favorite restaurants
   handleGetFavorites(e) {
 
+    this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 0, height: 0, zoom: 12}})
     const authHeader = this.getAuthorizationHeader();
 
     this.setState({formDisplay: "Favorites"});
@@ -142,7 +140,7 @@ class App extends Component {
     })
   }
 
-  // Search Yelp for nearby restaurants
+  // Call Yelp to search for nearby restaurants
   handleSearch(e) {
 
     const authHeader = this.getAuthorizationHeader();
@@ -164,25 +162,37 @@ class App extends Component {
     })
     .then(() => {
       // After geocoding, Search Yelp for nearby restaurants
-      fetch(`http://${this.state.hostApi}/api/v0/restaurants?distanceInMiles=5&address=` + e, 
+      const url = `http://${this.state.hostApi}/api/v0/restaurants?distanceInMiles=5&address=` + e;
+      fetch(url, 
           {headers: authHeader})      
-        .then(res => res.json())
-        .then((data) => {
+        .then(res => {
+          if (res.status == 200) {
+            return res.json()
+          } else {
+            throw new Error(`REST API call failed with status: ${res.status}: ${url}`);
+          }
+          })
+        .then(data => {
+            // const data = res.json();
+            console.log(JSON.stringify(data));
+            const restaurantsArray = []
+            let i = 0;
+            data.forEach(row => {
+              i += 1
+              restaurantsArray.push({"rownumber": i, "restaurantId": row.id, "name": row.name, "url": row.url, 
+                  "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude,
+                  "address1": row.location.address1, "city": row.location.city,
+                  "state": row.location.state, "zip": row.location.zip_code})
+            })
+            this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 600, height: 400, zoom: 12}})
+            this.setState({searchResults: restaurantsArray});
 
-        const restaurantsArray = []
-        let i = 0;
-        data.forEach(row => {
-          i += 1
-          restaurantsArray.push({"rownumber": i, "restaurantId": row.id, "name": row.name, "url": row.url, 
-              "longitude": row.coordinates.longitude, "latitude": row.coordinates.latitude,
-              "address1": row.location.address1, "city": row.location.city,
-              "state": row.location.state, "zip": row.location.zip_code})
 
         })
-        this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 600, height: 400, zoom: 12}})
-        this.setState({searchResults: restaurantsArray});
-      }).catch((e) => console.error(e))
-    .catch((e) => console.error(e))
+        .catch(e => {
+          console.error(e)
+        })
+
     })
 
   };
@@ -203,32 +213,28 @@ class App extends Component {
         headers: {'Content-Type': 'application/json'},
         body: bodyText
       })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json()
-        } else {
-          throw "INVALID"
-        }
-      }
-      )
+      .then(res => res.json())
       .then(data => {
-        ls.set("RESTAPI_TOKEN", data.token);
-        this.setState({
-          userInfo: jwt.decode(data.token),
-          formDisplay: "SearchRestaurants",
-          loginError: null
-        })
-
-        // Clear login fields
-        document.getElementById("UserID").value = null;
-        document.getElementById("Password").value = null;
+          const token = data.token
+          console.log("**** TOKEN = " + token)
+          ls.set("RESTAPI_TOKEN", token);
+          this.setState({
+            userInfo: jwt.decode(token),
+            formDisplay: "SearchRestaurants",
+            loginError: null
+          })
   
-      })
-      .catch(e => {
-        this.setState({loginError: "Unable to sign in. Please check your password and try again"})
-      })
+          // Clear login fields
+          document.getElementById("UserID").value = null;
+          document.getElementById("Password").value = null;
+        })
+        .catch(e => {
+          this.setState({loginError: "Unable to sign in. Please check your password and try again"})
+        
+        })
     }
 
+    // Navigate from Register User to Login page
     handleNavigateToLoginPage(document) {
       document.getElementById("RegisterUserID").value = null;
       document.getElementById("RegisterPassword").value = null;
@@ -236,12 +242,14 @@ class App extends Component {
       this.setState({formDisplay: "LoginUser"});
     }
 
+    // Switch from Login to Register User page
     handleNavigateToRegisterPage(document) {
       document.getElementById("UserID").value = null;
       document.getElementById("Password").value = null;
       this.setState({formDisplay: "RegisterUser"});
     }
   
+    // Register a new user
     handleRegisterUser(document) {
 
       const email = document.getElementById("RegisterUserID").value;
@@ -249,7 +257,7 @@ class App extends Component {
       const passwordConfirm = document.getElementById("RegisterPasswordConfirm").value;
       const fullName = document.getElementById("RegisterFullName").value;
 
-      if (email == "") {
+      if (email === "") {
         this.setState({registerUserError: "Email is a required field!"});      
         return
       }
@@ -258,19 +266,19 @@ class App extends Component {
         this.setState({registerUserError: "Please enter a valid email address!"});      
         return
       }
-      if (fullName == "") {
+      if (fullName === "") {
         this.setState({registerUserError: "Full Name is a required field!"});        
       }
 
-      if (password == "") {
+      if (password === "") {
         this.setState({registerUserError: "Password is a required field!"});        
       }
 
-      if (passwordConfirm == "") {
+      if (passwordConfirm === "") {
         this.setState({registerUserError: "Confirmed Password is a required field!"});        
       }
 
-      if (password != passwordConfirm) {
+      if (password !== passwordConfirm) {
         this.setState({registerUserError: "Password and Confirm Password fields do not match!"});
         return;
       }
@@ -294,22 +302,18 @@ class App extends Component {
         // console.error(bodyText)
         this.setState({registerUserError: "Failed to register user. Perhaps email address is already registered?"})
       }
-    }
-    )
-    .catch(e => {
-
     })
 
 
-    }
+  }
 
   render() {
     return (
       <div className="App">
         <header className="App-header">
-        <LoginUser formDisplay={this.state.formDisplay}
-          validateUser={this.validateUser} loginError={this.state.loginError}
-          handleNavigateToRegisterPage={this.handleNavigateToRegisterPage}/>
+          <LoginUser formDisplay={this.state.formDisplay}
+              validateUser={this.validateUser} loginError={this.state.loginError}
+              handleNavigateToRegisterPage={this.handleNavigateToRegisterPage}/>
           <RegisterUser formDisplay={this.state.formDisplay === "RegisterUser"} 
               handleRegisterUser={this.handleRegisterUser}
               handleNavigateToLoginPage={this.handleNavigateToLoginPage}
@@ -323,8 +327,7 @@ class App extends Component {
               viewport={this.state.viewport} logoutUser={this.logoutUser}
               handleGetFavorites = {this.handleGetFavorites} favorites={this.state.favorites}
               handleAddFavorite = {this.handleAddFavorite} handleDeleteFavorites = {this.handleDeleteFavorites}
-        />
-
+          />
         </header>
       </div>
     );
