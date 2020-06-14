@@ -90,8 +90,8 @@ class SearchRestaurants extends Component {
           &nbsp;&nbsp;
           <button className = "blue_button" type="button"  onClick={() => this.props.handleSearch(this.state.searchLocation)}>Search</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <button className={this.props.formDisplay !== "Favorites" ? '' : 'hide-component'} id="Favorites" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</button>
-          <button className={this.props.formDisplay === "Favorites" && this.props.favorites.length > 0 ? '' : 'hide-component'} id="Favorites" onClick={() => this.props.handleDeleteFavorites()}>Clear My Favorites</button>
+          <button className={this.props.formDisplay === 'SearchRestaurants' ? 'linkColor' : 'hide-component'} id="FavoritesButton" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</button>
+          <button className={this.props.formDisplay === 'Favorites' && this.props.favorites.length > 0 ? 'linkColor' : 'hide-component'} id="DeleteFavoritesButton" onClick={() => this.props.handleDeleteFavorites()}>Clear My Favorites</button>
         </div>
       </div>
       <div className={this.props.formDisplay !== "Favorites" ? '' : 'hide-compnent'}>
