@@ -128,7 +128,7 @@ class App extends Component {
   // Retrieve user's favorite restaurants
   handleGetFavorites(e) {
 
-    this.setState({viewport: {longitude: 0, latitude: 0, width: 0, height: 0, zoom: 12}})
+    this.setState({viewport: {longitude: 0, latitude: 0, width: 0, height: 0, zoom: 10}})
     const authHeader = this.getAuthorizationHeader();
 
     this.setState({formDisplay: "Favorites"});

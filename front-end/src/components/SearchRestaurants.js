@@ -77,9 +77,9 @@ class SearchRestaurants extends Component {
     
     return (
 
-      <div key={this.props.searchResults} className={this.props.formDisplay === "Favorites" || this.props.formDisplay === "SearchRestaurants"}>
+      <div key={this.props.searchResults} className={this.props.formDisplay === "Favorites" || this.props.formDisplay === "SearchRestaurants" ? "" : "hide-component"}>
       {/* Search Restaurants control: Address Box, Search Button, View Favorites Button, Clear Favorites Button */}
-      <div id="criteria" className={this.props.formDisplay === "Favorites" || this.props.formDisplay === "SearchRestaurants" ? '' : 'hide-component'}>
+      <div id="criteria" className={this.props.formDisplay === "Favorites" || this.props.formDisplay === "SearchRestaurants" ? 'searchCriteriaDiv' : 'hide-component'}>
         <div className = "logoutDiv">
           <button className = "blue_button logoutButton" type="button"  onClick={() => this.props.logoutUser()}>Logout</button><br/>
         </div>
