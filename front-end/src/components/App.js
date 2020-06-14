@@ -243,7 +243,7 @@ class App extends Component {
     }
   
     handleRegisterUser(document) {
-      console.log("Inside method handleRegisterUser...")
+
       const email = document.getElementById("RegisterUserID").value;
       const password = document.getElementById("RegisterPassword").value;
       const passwordConfirm = document.getElementById("RegisterPasswordConfirm").value;
@@ -291,13 +291,13 @@ class App extends Component {
         this.setState({registerUserError: null, registerUserStatus: "User " + email + " successfully registered!"})
         // return res.json()
       } else {
-        console.error(bodyText)
-        throw "FAILED TO ADD FAVORITE. Status = " + res.status
+        // console.error(bodyText)
+        this.setState({registerUserError: "Failed to register user. Perhaps email address is already registered?"})
       }
     }
     )
     .catch(e => {
-      console.error(e)
+
     })
 
 

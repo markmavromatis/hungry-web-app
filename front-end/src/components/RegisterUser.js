@@ -7,7 +7,7 @@ class RegisterUser extends Component {
     render() {
         return (
             <div className={this.props.formDisplay ? '' : 'hide-component'}>
-                <p>Register User</p>
+                <p className="title">Register User</p>
                 <label className="login">Email Address:</label><input id="RegisterUserID" type="text"/><br/>
                 <label className="login">Full Name:</label><input id="RegisterFullName" type="text"/><br/>
                 <label className="login">Password: </label><input id="RegisterPassword" type="password"/><br/>

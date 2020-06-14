@@ -25,7 +25,7 @@ class LoginUser extends Component {
           <label className="login">Password: </label><input id="Password" type="password"/><br/>
           <button className="blue_button" type="button" onClick={() => this.props.validateUser(document)}>Sign In</button>
           <div className="loginError {this.props.loginError ? '' : 'hide-component'}"><p>{this.props.loginError}</p></div>
-          <p><label className="register"> No account? No problem. <a className="register popup_restaurant_name" onClick={() => this.props.handleNavigateToRegisterPage(document)}>Register here</a></label></p>
+          <p><label className="register"> No account? No problem. <a className="register registerLink" onClick={() => this.props.handleNavigateToRegisterPage(document)}>Register here</a></label></p>
       </div>
     );
   }

@@ -114,7 +114,7 @@ router.post('/', async (req: Request, res: Response) => {
     const user = await User.findByPk(email);
     // check that user doesnt exists
     if(user) {
-        return res.status(422).send({ auth: false, message: 'User may already exist' });
+        return res.status(409).send({ auth: false, message: 'User may already exist' });
     }
 
     const password_hash = await hashPassword(password);

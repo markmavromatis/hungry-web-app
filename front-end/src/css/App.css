@@ -67,7 +67,8 @@ img {
   width: 150px;
   display: inline-block;
   size: 50;
-  margin-bottom: 20px
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .title {
@@ -136,6 +137,10 @@ img {
 
 .register{
   font-size: 20px;
+}
+
+.registerLink{
+  color: silver
 }
 
 .loginError{
