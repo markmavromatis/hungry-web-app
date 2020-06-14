@@ -91,10 +91,10 @@ class SearchRestaurants extends Component {
           <button className = "blue_button" type="button"  onClick={() => this.props.handleSearch(this.state.searchLocation)}>Search</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       {/* Map (for Search Restaurants screen) */}
-      <div className={this.props.searchResults.length > 0 && this.props.formDisplay === "SearchRestaurants" ? '' : 'hide-component'}>
-      </div>
-        <a className={this.props.formDisplay !== "Favorites" ? '' : 'hide-component'} id="Favorites" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</a>
+      {/* <div className={this.props.searchResults.length > 0 && this.props.formDisplay === "SearchRestaurants" ? '' : 'hide-component'}> */}
+      <a className={this.props.formDisplay !== "Favorites" ? '' : 'hide-component'} id="Favorites" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</a>
         <a className={this.props.formDisplay === "Favorites" && this.props.favorites.length > 0 ? '' : 'hide-component'} id="Favorites" onClick={() => this.props.handleDeleteFavorites()}>Clear My Favorites</a>
+      {/* </div> */}
       </div>
       <ReactMapGL
         {...this.props.viewport}
