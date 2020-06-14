@@ -80,6 +80,9 @@ class SearchRestaurants extends Component {
       <div key={this.props.searchResults}>
       {/* Search Restaurants control: Address Box, Search Button, View Favorites Button, Clear Favorites Button */}
       <div id="criteria" className={this.props.formDisplay === "Favorites" || this.props.formDisplay === "SearchRestaurants" ? '' : 'hide-component'}>
+        <div className = "logoutDiv">
+        <button className = "blue_button logoutButton" type="button"  onClick={() => this.props.logoutUser()}>Logout</button><br/>
+        </div>
         <p className="title">Search Restaurants</p>
         <div><label>Address:&nbsp;&nbsp;</label>
           <input type="text" id="searchLocation" size="50" name="searchLocation" value={this.state.searchLocation}
@@ -87,20 +90,13 @@ class SearchRestaurants extends Component {
           &nbsp;&nbsp;
           <button className = "blue_button" type="button"  onClick={() => this.props.handleSearch(this.state.searchLocation)}>Search</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a className={this.props.formDisplay !== "Favorites" ? '' : 'hide-component'} id="Favorites" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</a>
-          <a className={this.props.formDisplay === "Favorites" && this.props.favorites.length > 0 ? '' : 'hide-component'} id="Favorites" onClick={() => this.props.handleDeleteFavorites()}>Clear My Favorites</a>
-        </div>
-      </div>
-
-      {/* Favorites List (for View Favorites screen) */}
-      <div className={this.props.formDisplay === "Favorites" ? '' : 'hide-component'}>
-        <p className="my-favorites-title">Favorite Restaurants</p>
-        {favoritesList}        
-      </div>
-
       {/* Map (for Search Restaurants screen) */}
       <div className={this.props.searchResults.length > 0 && this.props.formDisplay === "SearchRestaurants" ? '' : 'hide-component'}>
-      <ReactMapGL 
+      </div>
+        <a className={this.props.formDisplay !== "Favorites" ? '' : 'hide-component'} id="Favorites" onClick={(e) => this.props.handleGetFavorites()}>My Favorites</a>
+        <a className={this.props.formDisplay === "Favorites" && this.props.favorites.length > 0 ? '' : 'hide-component'} id="Favorites" onClick={() => this.props.handleDeleteFavorites()}>Clear My Favorites</a>
+      </div>
+      <ReactMapGL
         {...this.props.viewport}
         mapboxApiAccessToken={process.env.REACT_APP_HUNGRY_MAPBOX_TOKEN}>
           <Marker latitude={this.props.viewport.latitude} longitude={this.props.viewport.longitude}>
@@ -130,7 +126,15 @@ class SearchRestaurants extends Component {
             </Popup>
           ) : null}
       </ReactMapGL>
-    </div>
+      </div>
+
+      {/* Favorites List (for View Favorites screen) */}
+      <div className={this.props.formDisplay === "Favorites" ? '' : 'hide-component'}>
+        <p className="my-favorites-title">Favorite Restaurants</p>
+        {favoritesList}        
+      </div>
+
+
   </div>
 )}
 }

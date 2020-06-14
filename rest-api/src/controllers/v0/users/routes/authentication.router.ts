@@ -93,18 +93,23 @@ router.post('/login', async (req: Request, res: Response) => {
 
 //register a new user
 router.post('/', async (req: Request, res: Response) => {
-    const email = req.body.email;
-    const plainTextPassword = req.body.password;
+    const {email, password, fullName} = req.body;
+
     // check email is valid
     if (!email || !EmailValidator.validate(email)) {
-        return res.status(400).send({ auth: false, message: 'Email is required or malformed' });
+        return res.status(400).send({ auth: false, message: 'email is required or malformed' });
     }
 
-    // check email password valid
-    if (!plainTextPassword) {
-        return res.status(400).send({ auth: false, message: 'Password is required' });
+    // check password valid
+    if (!password) {
+        return res.status(400).send({ auth: false, message: 'password is required' });
     }
 
+    // check fullName valid
+    if (!fullName) {
+        return res.status(400).send({ auth: false, message: 'fullName is required' });
+    }
+    
     // find the user
     const user = await User.findByPk(email);
     // check that user doesnt exists
@@ -112,11 +117,12 @@ router.post('/', async (req: Request, res: Response) => {
         return res.status(422).send({ auth: false, message: 'User may already exist' });
     }
 
-    const password_hash = await hashPassword(plainTextPassword);
+    const password_hash = await hashPassword(password);
 
     const newUser = await new User({
         email: email,
-        passwordHashed: password_hash
+        passwordHashed: password_hash,
+        fullName: fullName
     });
 
     let savedUser;

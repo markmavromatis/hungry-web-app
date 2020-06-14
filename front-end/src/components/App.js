@@ -6,6 +6,7 @@ import RegisterUser from './RegisterUser';
 import mapboxgl from "mapbox-gl"
 import * as jwt from 'jsonwebtoken';
 import ls from 'local-storage'
+import * as EmailValidator from 'email-validator';
 
 
 class App extends Component {
@@ -14,6 +15,9 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
+      loginError: null,
+      registerUserError: null,
+      registerUserStatus: null,
       formDisplay: "LoginUser",
       searchResults: [],
       favorites: [],
@@ -21,8 +25,8 @@ class App extends Component {
       viewport: {
         latitude : 0,
         longitude: 0,
-        width: 400,
-        height: 400,
+        width: 0,
+        height: 0,
         zoom: 12
       },
       userInfo: null,
@@ -37,6 +41,10 @@ class App extends Component {
     this.handleGetFavorites = this.handleGetFavorites.bind(this);
     this.handleAddFavorite = this.handleAddFavorite.bind(this);
     this.handleDeleteFavorites = this.handleDeleteFavorites.bind(this);
+    this.handleNavigateToLoginPage = this.handleNavigateToLoginPage.bind(this);
+    this.handleNavigateToRegisterPage = this.handleNavigateToRegisterPage.bind(this);
+    this.handleRegisterUser = this.handleRegisterUser.bind(this);
+
     // this.getAuthorizationHeader = this.getAuthorizationHeader(this);
   }
 
@@ -105,41 +113,15 @@ class App extends Component {
 
   }
 
-  // Validate user credentials (userID and password)
-  validateUser(userId, password) {
 
-    const bodyText = JSON.stringify({email: userId, password: password});
-
-    fetch(`http://${this.state.hostApi}/api/v0/users/auth/login`, {method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: bodyText
-    })
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      } else {
-        throw "INVALID"
-      }
-    }
-    )
-    .then(data => {
-      ls.set("RESTAPI_TOKEN", data.token);
-      this.setState({
-        userInfo: jwt.decode(data.token),
-        formDisplay: "SearchRestaurants"
-      })
-      
-    })
-    .catch(e => {
-      console.error(e)
-    })
-    // .then((data) => {
-    // }
-  }
 
   logoutUser() {
-    this.setState({userInfo: null, formDisplay: "LoginUser"});
-    ls.setItem("RESTAPI_TOKEN", null)
+    this.setState({
+      userInfo: null,
+      submittedSearchAddress: null,
+      formDisplay: "LoginUser"
+    });
+    ls.set("RESTAPI_TOKEN", null)
   }
 
   updateFormDisplay(e) {
@@ -197,7 +179,7 @@ class App extends Component {
               "state": row.location.state, "zip": row.location.zip_code})
 
         })
-        this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 400, height: 400, zoom: 12}})
+        this.setState({viewport: {longitude: this.state.mapAttributes.centerLongitude, latitude: this.state.mapAttributes.centerLatitude, width: 600, height: 400, zoom: 12}})
         this.setState({searchResults: restaurantsArray});
       }).catch((e) => console.error(e))
     .catch((e) => console.error(e))
@@ -205,13 +187,135 @@ class App extends Component {
 
   };
 
+    // Validate user credentials (userID and password)
+    validateUser(document) {
+
+      const userId = document.getElementById("UserID").value
+      const password = document.getElementById("Password").value
+      
+      // Don't validate credentials if either userid or password are missing.
+      if (!userId || !password) {        
+        return
+      }
+      const bodyText = JSON.stringify({email: userId, password: password});
+  
+      fetch(`http://${this.state.hostApi}/api/v0/users/auth/login`, {method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: bodyText
+      })
+      .then(res => {
+        if (res.status === 200) {
+          return res.json()
+        } else {
+          throw "INVALID"
+        }
+      }
+      )
+      .then(data => {
+        ls.set("RESTAPI_TOKEN", data.token);
+        this.setState({
+          userInfo: jwt.decode(data.token),
+          formDisplay: "SearchRestaurants",
+          loginError: null
+        })
+
+        // Clear login fields
+        document.getElementById("UserID").value = null;
+        document.getElementById("Password").value = null;
+  
+      })
+      .catch(e => {
+        this.setState({loginError: "Unable to sign in. Please check your password and try again"})
+      })
+    }
+
+    handleNavigateToLoginPage(document) {
+      document.getElementById("RegisterUserID").value = null;
+      document.getElementById("RegisterPassword").value = null;
+      document.getElementById("RegisterPasswordConfirm").value = null;
+      this.setState({formDisplay: "LoginUser"});
+    }
+
+    handleNavigateToRegisterPage(document) {
+      document.getElementById("UserID").value = null;
+      document.getElementById("Password").value = null;
+      this.setState({formDisplay: "RegisterUser"});
+    }
+  
+    handleRegisterUser(document) {
+      console.log("Inside method handleRegisterUser...")
+      const email = document.getElementById("RegisterUserID").value;
+      const password = document.getElementById("RegisterPassword").value;
+      const passwordConfirm = document.getElementById("RegisterPasswordConfirm").value;
+      const fullName = document.getElementById("RegisterFullName").value;
+
+      if (email == "") {
+        this.setState({registerUserError: "Email is a required field!"});      
+        return
+      }
+
+      if (!EmailValidator.validate(email)) {
+        this.setState({registerUserError: "Please enter a valid email address!"});      
+        return
+      }
+      if (fullName == "") {
+        this.setState({registerUserError: "Full Name is a required field!"});        
+      }
+
+      if (password == "") {
+        this.setState({registerUserError: "Password is a required field!"});        
+      }
+
+      if (passwordConfirm == "") {
+        this.setState({registerUserError: "Confirmed Password is a required field!"});        
+      }
+
+      if (password != passwordConfirm) {
+        this.setState({registerUserError: "Password and Confirm Password fields do not match!"});
+        return;
+      }
+
+
+
+      // Register user
+      const headers = this.getAuthorizationHeader();
+      headers['Content-Type'] = 'application/json';
+      const bodyText = JSON.stringify({email: email, password: password, fullName: fullName});
+      fetch(`http://${this.state.hostApi}/api/v0/users/auth/`, {method: 'POST',
+      headers: headers,
+      body: bodyText
+    })
+    .then(res => {
+      // For this service, 201 if user registered.
+      if (res.status === 201) {
+        this.setState({registerUserError: null, registerUserStatus: "User " + email + " successfully registered!"})
+        // return res.json()
+      } else {
+        console.error(bodyText)
+        throw "FAILED TO ADD FAVORITE. Status = " + res.status
+      }
+    }
+    )
+    .catch(e => {
+      console.error(e)
+    })
+
+
+    }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <LoginUser formDisplay={this.state.formDisplay === "LoginUser"}
-            validateUser={this.validateUser}/>
-          <RegisterUser formDisplay={this.state.formDisplay === "RegisterUser"}/>
+        <LoginUser formDisplay={this.state.formDisplay}
+          validateUser={this.validateUser} loginError={this.state.loginError}
+          handleNavigateToRegisterPage={this.handleNavigateToRegisterPage}/>
+          <RegisterUser formDisplay={this.state.formDisplay === "RegisterUser"} 
+              handleRegisterUser={this.handleRegisterUser}
+              handleNavigateToLoginPage={this.handleNavigateToLoginPage}
+              userRegistrationError = {this.state.registerUserError}
+              registerUserStatus = {this.state.registerUserStatus}
+              />
           <SearchRestaurants formDisplay={this.state.formDisplay}
               updateFormDisplay={this.updateFormDisplay} handleSearch={this.handleSearch}
               searchResults={this.state.searchResults} submittedSearchAddress={this.state.submittedSearchAddress}
