@@ -71,6 +71,14 @@ img {
   text-align: left;
 }
 
+.registerLabel{
+  width: 250px;
+  display: inline-block;
+  size: 50;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
 .title {
   font-size:30px;
   display: block;
@@ -141,6 +149,11 @@ img {
 
 .registerLink{
   color: silver
+}
+
+.loginStatus{
+  font-size: 14px;
+  color: white;
 }
 
 .loginError{
