@@ -1,68 +1,58 @@
+# Hungry Web App Front End
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+This code implements the front-end of the Hungry Web App. It allows users to register, search for restaurants, add favorites, and view / delete them.
 
-In the project directory, you can run:
+Application screenshots can be found in the Screenshots/ folder.
 
-### `npm start`
+## Installation Instructions
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Three environment variables must be set before running the application:
+- REACT_APP_HUNGRY_MAPBOX_TOKEN - Mapbox Service token
+- REACT_APP_HUNGRY_REST_API_HOST - Rest API host
+- REACT_APP_HUNGRY_REST_API_PORT - Rest API port
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+After setting up the environment variables and launching the REST API, run the web front-end server as follows:
 
-### `npm test`
+- ```npm install```
+- ```npm start```
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The web application is hosted on port 3000 of the host server.
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## NPM Modules
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+The project is built using several well known Node packages:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    "email-validator": "^2.0.4",
+    "jsonwebtoken": "^8.5.1",
+    "local-storage": "^2.0.0",
+    "mapbox-gl": "^1.8.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-icons": "^3.10.0",
+    "react-map-gl": "^5.2.7",
+    "react-scripts": "3.4.1"
 
-### `npm run eject`
+- email-validator - Validate email address in the UserID input field
+- jsonwebtoken - Create and decode JSON web tokens
+- localstorage - Allow setting and retrieving local storage fields
+- mapbox-gl - MapBox API library
+- react - Framework for writing web apps
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## React Components
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+This single page web app consists of the following custom components:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- LoginUser - Initial screen. This is where users login to the application.
+- RegisterUser - New users can register here for a new account.
+- SearchRestaurants - This page is used to search for restaurants and view favorites.
 
-## Learn More
+## External Dependencies
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This application has aß dependency on the [Mapbox Service](https://www.mapbox.com). This service includes a Geocoding service as well as a dynamic mapping service which leverages the [OpenStreetMap](https://www.openstreetmap.org/#map=4/38.01/-95.84) open source project. This application uses Mapbox to draw maps and render restaurant markers and popups.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The maps require setting a Mapbox Token key (as an environment variable). A limited use free key can be requested from the Mapbox service.
 
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify

@@ -4,15 +4,6 @@ import '../css/App.css';
 
 // User Login Page
 class LoginUser extends Component {
-
-  constructor() {
-    super();
-    this.state = {
-      loginError: "",
-      hostApi: process.env.REACT_APP_HUNGRY_REST_API_HOST + ":" + process.env.REACT_APP_HUNGRY_REST_API_PORT
-    };
-
-  }
   
   render() {
 
